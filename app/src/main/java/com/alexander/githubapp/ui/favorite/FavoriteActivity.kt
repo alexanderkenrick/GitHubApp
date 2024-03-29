@@ -1,6 +1,7 @@
 package com.alexander.githubapp.ui.favorite
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.alexander.githubapp.databinding.ActivityFavoriteBinding
 import androidx.lifecycle.ViewModelProvider
@@ -24,6 +25,11 @@ class FavoriteActivity : AppCompatActivity() {
         viewModel.getAllFavorites().observe(this) { favoriteList ->
             if (favoriteList != null) {
                 adapter.setListFavorite(favoriteList)
+                binding?.txtNotExist?.visibility = View.GONE
+            }
+
+            if (favoriteList.isEmpty()) {
+                binding?.txtNotExist?.visibility = View.VISIBLE
             }
         }
 
