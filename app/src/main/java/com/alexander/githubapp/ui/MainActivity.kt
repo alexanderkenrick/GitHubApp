@@ -1,11 +1,15 @@
 package com.alexander.githubapp.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
+import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,10 +22,13 @@ import com.alexander.githubapp.ui.favorite.FavoriteActivity
 import com.alexander.githubapp.ui.preferences.ThemeActivity
 import com.alexander.githubapp.ui.preferences.ThemeViewModel
 
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val mainViewModel by viewModels<MainViewModel>()
+    private val mainViewModel by viewModels<MainViewModel>() {
+        ViewModelFactory.getInstance(application)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,10 +43,13 @@ class MainActivity : AppCompatActivity() {
         )
 
         themeViewModel.getThemeSettings().observe(this) { isDarkMode: Boolean ->
+            val menuItem: MenuItem = binding.searchBar.menu.findItem(R.id.menu_favorite)
             if (isDarkMode) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                tintMenuIcon(this, menuItem, com.google.android.material.R.color.material_dynamic_neutral_variant70)
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                tintMenuIcon(this, menuItem, com.google.android.material.R.color.material_dynamic_neutral_variant20)
             }
         }
 
@@ -106,5 +116,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun showLoading(state: Boolean) {
         binding.progressBar.visibility = if (state) View.VISIBLE else View.GONE
+    }
+
+    fun tintMenuIcon(context: Context, item: MenuItem, @ColorRes color: Int) {
+        val normalDrawable = item.icon
+        val wrapDrawable = DrawableCompat.wrap(normalDrawable!!)
+        DrawableCompat.setTint(wrapDrawable, context.resources.getColor(color))
+        item.setIcon(wrapDrawable)
     }
 }

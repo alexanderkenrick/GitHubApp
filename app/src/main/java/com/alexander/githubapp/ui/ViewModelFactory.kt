@@ -32,7 +32,9 @@ class ViewModelFactory internal constructor(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(FavoriteViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+            return MainViewModel(mApplication) as T
+        } else if (modelClass.isAssignableFrom(FavoriteViewModel::class.java)) {
             return FavoriteViewModel(mApplication) as T
         } else if (modelClass.isAssignableFrom(DetailViewModel::class.java)) {
             return DetailViewModel(mApplication) as T

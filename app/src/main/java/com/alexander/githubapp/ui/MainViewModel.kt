@@ -1,5 +1,6 @@
 package com.alexander.githubapp.ui
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +12,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : ViewModel() {
 
     private val _listUser = MutableLiveData<List<User>>()
     val listUser: LiveData<List<User>> = _listUser
