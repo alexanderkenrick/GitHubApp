@@ -48,13 +48,13 @@ class MainActivity : AppCompatActivity() {
                 tintMenuIcon(
                     this,
                     menuItem,
-                    com.google.android.material.R.color.material_dynamic_neutral_variant70
+                    R.color.menu_item_dark
                 )
             } else {
                 tintMenuIcon(
                     this,
                     menuItem,
-                    com.google.android.material.R.color.material_dynamic_neutral_variant20
+                    R.color.menu_item_light
                 )
             }
         }
@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity() {
         binding.progressBar.visibility = if (state) View.VISIBLE else View.GONE
     }
 
-    fun tintMenuIcon(context: Context, item: MenuItem, @ColorRes color: Int) {
+    private fun tintMenuIcon(context: Context, item: MenuItem, @ColorRes color: Int) {
         val normalDrawable = item.icon
         val wrapDrawable = DrawableCompat.wrap(normalDrawable!!)
         DrawableCompat.setTint(wrapDrawable, context.resources.getColor(color))

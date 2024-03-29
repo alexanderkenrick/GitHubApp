@@ -62,5 +62,8 @@
     <color name="md_theme_dark_outlineVariant">#40484B</color>
     <color name="md_theme_dark_scrim">#000000</color>
 
+    <color name="menu_item_dark">#A5ACB2</color>
+    <color name="menu_item_light">#2A3136</color>
+
     <color name="launcherBackground">@color/md_theme_light_background</color>
 </resources>
