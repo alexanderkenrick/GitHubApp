@@ -1,36 +1,33 @@
 package com.alexander.githubapp.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.DiffUtil
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.alexander.githubapp.R
 import com.alexander.githubapp.data.response.DetailUserResponse
-import com.alexander.githubapp.data.response.User
 import com.alexander.githubapp.databinding.ActivityDetailBinding
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
-    private val detailViewModel by viewModels<DetailViewModel>()
+    private val detailViewModel by viewModels<DetailViewModel>() {
+        ViewModelFactory.getInstance(application)
+    }
+
+    private var isFavorite = false
+    private var userUrl = ""
 
     companion object {
         const val EXTRA_USERNAME = "extra_username"
-
-        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<User>() {
-            override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
-                return oldItem == newItem
-            }
-        }
 
         @StringRes
         private val TAB_TITLES = intArrayOf(
@@ -49,8 +46,8 @@ class DetailActivity : AppCompatActivity() {
         val username = intent.getStringExtra(EXTRA_USERNAME)
         detailViewModel.findUserDetail(username.toString())
 
-        detailViewModel.user.observe(this) { username ->
-            setUserDetail(username)
+        detailViewModel.user.observe(this) { user ->
+            setUserDetail(user)
         }
 
         detailViewModel.isLoading.observe(this) {
@@ -64,13 +61,40 @@ class DetailActivity : AppCompatActivity() {
         TabLayoutMediator(tabs, viewPager) { tab, position ->
             tab.text = resources.getString(TAB_TITLES[position])
         }.attach()
+
+        lifecycleScope.launch(Dispatchers.Default) {
+            isFavorite = detailViewModel.getFavoriteStatus(username ?: "")
+            if (isFavorite) {
+                binding.btnFavorite.setImageResource(R.drawable.baseline_favorite_24)
+            } else {
+                binding.btnFavorite.setImageResource(R.drawable.baseline_favorite_border_24)
+            }
+
+        }
+
+        binding.btnFavorite.setOnClickListener() {
+            lifecycleScope.launch(Dispatchers.Default) {
+                isFavorite = if (isFavorite) {
+                    detailViewModel.deleteFavorite(username ?: "")
+                    binding.btnFavorite.setImageResource(R.drawable.baseline_favorite_border_24)
+                    false
+                } else {
+                    detailViewModel.addFavorite(username ?: "", userUrl)
+                    binding.btnFavorite.setImageResource(R.drawable.baseline_favorite_24)
+                    true
+                }
+            }
+
+        }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setUserDetail(user: DetailUserResponse) {
         binding.txtName.text = user.name
         binding.txtUsername.text = user.login
         binding.txtFollowers.text = "${user.followers} Followers"
         binding.txtFollowing.text = "${user.following} Following"
+        userUrl = user.avatarUrl
         Glide.with(this)
             .load(user.avatarUrl)
             .into(binding.userImg)
@@ -93,6 +117,4 @@ class DetailActivity : AppCompatActivity() {
             binding.txtFollowers.visibility = View.VISIBLE
         }
     }
-
-
 }

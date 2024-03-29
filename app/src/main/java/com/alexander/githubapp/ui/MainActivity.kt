@@ -1,14 +1,22 @@
 package com.alexander.githubapp.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.alexander.githubapp.R
 import com.alexander.githubapp.data.response.User
 import com.alexander.githubapp.databinding.ActivityMainBinding
+import com.alexander.githubapp.preferences.SettingPreferences
+import com.alexander.githubapp.preferences.dataStore
+import com.alexander.githubapp.ui.favorite.FavoriteActivity
+import com.alexander.githubapp.ui.preferences.ThemeActivity
+import com.alexander.githubapp.ui.preferences.ThemeViewModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,6 +29,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         supportActionBar?.hide()
+
+        val pref = SettingPreferences.getInstance(application.dataStore)
+        val themeViewModel = ViewModelProvider(this, ViewModelFactory(this.application, pref)).get(
+            ThemeViewModel::class.java
+        )
+
+        themeViewModel.getThemeSettings().observe(this) { isDarkMode: Boolean ->
+            if (isDarkMode) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
 
         mainViewModel.listUser.observe(this) { listUser ->
             setUserData(listUser)
@@ -38,14 +59,34 @@ class MainActivity : AppCompatActivity() {
         with(binding) {
             searchView.setupWithSearchBar(searchBar)
 
-            searchView.editText.setOnEditorActionListener { textView, actionId, event ->
-                    searchBar.setText(searchView.text)
-                    val usernameSearched = searchView.text.toString()
-                    mainViewModel.findUser(usernameSearched)
-                    searchView.hide()
+            searchBar.inflateMenu(R.menu.option_menu)
+            searchBar.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.menu_favorite -> {
+                        val intent = Intent(this@MainActivity, FavoriteActivity::class.java)
+                        startActivity(intent)
+                        true
+                    }
 
-                    false
+                    R.id.menu_theme -> {
+                        val intent = Intent(this@MainActivity, ThemeActivity::class.java)
+                        startActivity(intent)
+                        true
+                    }
+
+                    else -> false
+
                 }
+            }
+
+            searchView.editText.setOnEditorActionListener { _, _, _ ->
+                searchBar.setText(searchView.text)
+                val usernameSearched = searchView.text.toString()
+                mainViewModel.findUser(usernameSearched)
+                searchView.hide()
+
+                false
+            }
         }
     }
 
@@ -63,5 +104,7 @@ class MainActivity : AppCompatActivity() {
         binding.rvUser.adapter = adapter
     }
 
-    private fun showLoading(state: Boolean) { binding.progressBar.visibility = if (state) View.VISIBLE else View.GONE }
+    private fun showLoading(state: Boolean) {
+        binding.progressBar.visibility = if (state) View.VISIBLE else View.GONE
+    }
 }

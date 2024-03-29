@@ -1,5 +1,6 @@
 package com.alexander.githubapp.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -25,8 +26,7 @@ class FollowFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    ): View {
         binding = FragmentFollowBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -53,6 +53,7 @@ class FollowFragment : Fragment() {
         binding.rvUser.addItemDecoration(itemDecoration)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setUserData(listUser: List<User>) {
         val adapter = UserAdapter()
         if (listUser.isEmpty()) {
@@ -67,6 +68,8 @@ class FollowFragment : Fragment() {
         binding.rvUser.adapter = adapter
     }
 
-    private fun showLoading(state: Boolean) { binding.progressBar.visibility = if (state) View.VISIBLE else View.GONE }
+    private fun showLoading(state: Boolean) {
+        binding.progressBar.visibility = if (state) View.VISIBLE else View.GONE
+    }
 
 }

@@ -9,5 +9,5 @@ import com.alexander.githubapp.data.repository.FavoriteRepository
 class FavoriteViewModel(application: Application) : ViewModel() {
     private val mFavoriteRepository: FavoriteRepository = FavoriteRepository(application)
 
-    fun getAllFavorites() : LiveData<List<FavoriteUser>> = mFavoriteRepository.getAllFavorite()
+    fun getAllFavorites(): LiveData<List<FavoriteUser>> = mFavoriteRepository.getAllFavorite()
 }

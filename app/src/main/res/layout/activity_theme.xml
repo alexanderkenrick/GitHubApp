@@ -5,16 +5,17 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingVertical="16dp"
-    tools:context=".ui.favorite.FavoriteActivity">
+    tools:context=".ui.preferences.ThemeActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvFavorite"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:paddingHorizontal="8dp"
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switch_theme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dark_mode"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
