@@ -17,6 +17,8 @@ class ThemeActivity : AppCompatActivity() {
         binding = ActivityThemeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        supportActionBar?.hide()
+
         val switchTheme = binding.switchTheme
 
         val pref = SettingPreferences.getInstance(application.dataStore)

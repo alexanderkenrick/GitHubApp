@@ -8,7 +8,6 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -38,18 +37,25 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         val pref = SettingPreferences.getInstance(application.dataStore)
-        val themeViewModel = ViewModelProvider(this, ViewModelFactory(this.application, pref)).get(
-            ThemeViewModel::class.java
-        )
+        val themeViewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(this.application, pref)
+        )[ThemeViewModel::class.java]
 
         themeViewModel.getThemeSettings().observe(this) { isDarkMode: Boolean ->
             val menuItem: MenuItem = binding.searchBar.menu.findItem(R.id.menu_favorite)
             if (isDarkMode) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                tintMenuIcon(this, menuItem, com.google.android.material.R.color.material_dynamic_neutral_variant70)
+                tintMenuIcon(
+                    this,
+                    menuItem,
+                    com.google.android.material.R.color.material_dynamic_neutral_variant70
+                )
             } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                tintMenuIcon(this, menuItem, com.google.android.material.R.color.material_dynamic_neutral_variant20)
+                tintMenuIcon(
+                    this,
+                    menuItem,
+                    com.google.android.material.R.color.material_dynamic_neutral_variant20
+                )
             }
         }
 
@@ -106,7 +112,6 @@ class MainActivity : AppCompatActivity() {
         if (listUser.isEmpty()) {
             with(binding.txtNotExist) {
                 visibility = View.VISIBLE
-                "Data not available".also { text = it }
             }
         } else {
             binding.txtNotExist.visibility = View.GONE

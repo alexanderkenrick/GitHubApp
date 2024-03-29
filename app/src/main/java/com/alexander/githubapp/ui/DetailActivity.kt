@@ -3,8 +3,10 @@ package com.alexander.githubapp.ui
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
+import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
@@ -69,7 +71,6 @@ class DetailActivity : AppCompatActivity() {
             } else {
                 binding.btnFavorite.setImageResource(R.drawable.baseline_favorite_border_24)
             }
-
         }
 
         binding.btnFavorite.setOnClickListener() {
@@ -77,14 +78,22 @@ class DetailActivity : AppCompatActivity() {
                 isFavorite = if (isFavorite) {
                     detailViewModel.deleteFavorite(username ?: "")
                     binding.btnFavorite.setImageResource(R.drawable.baseline_favorite_border_24)
+                    workerThread("Removed from favorite")
                     false
                 } else {
                     detailViewModel.addFavorite(username ?: "", userUrl)
                     binding.btnFavorite.setImageResource(R.drawable.baseline_favorite_24)
+                    workerThread("Added to favorite")
                     true
                 }
             }
+        }
+    }
 
+    @WorkerThread
+    fun workerThread(message: String) {
+        this.runOnUiThread {
+            Toast.makeText(this@DetailActivity, message, Toast.LENGTH_SHORT).show()
         }
     }
 
