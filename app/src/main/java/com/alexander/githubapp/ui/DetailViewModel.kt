@@ -1,23 +1,29 @@
 package com.alexander.githubapp.ui
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.alexander.githubapp.data.database.FavoriteUser
+import com.alexander.githubapp.data.repository.FavoriteRepository
 import com.alexander.githubapp.data.response.DetailUserResponse
-import com.alexander.githubapp.data.response.User
 import com.alexander.githubapp.data.retrofit.ApiConfig
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class DetailViewModel : ViewModel() {
+class DetailViewModel(application: Application) : ViewModel() {
 
     private val _user = MutableLiveData<DetailUserResponse>()
     val user: LiveData<DetailUserResponse> = _user
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
+
+    private val mFavoriteRepository: FavoriteRepository = FavoriteRepository(application)
 
     internal fun findUserDetail(username: String) {
         _isLoading.value = true
@@ -43,6 +49,21 @@ class DetailViewModel : ViewModel() {
                 Log.e(TAG, "onFailure: ${t.message.toString()}")
             }
         })
+    }
+
+    fun getFavoriteStatus(username: String): Boolean {
+        mFavoriteRepository.getFavoriteUserStatus(username) ?: return false
+        return true
+    }
+
+    fun deleteFavorite(username: String) {
+        val favUser = mFavoriteRepository.getFavoriteUserStatus(username)
+        mFavoriteRepository.delete(favUser)
+    }
+
+    suspend fun addFavorite(username: String, avatarUrl: String) = withContext(Dispatchers.IO) {
+        val favUser = FavoriteUser(username, avatarUrl)
+        mFavoriteRepository.insert(favUser)
     }
 
     companion object {
